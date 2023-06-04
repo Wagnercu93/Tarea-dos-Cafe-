@@ -1,0 +1,174 @@
+---
+title: "Café: Diversidad y calidad"
+author: "Wagner Antonio Chacón Ulate"
+date: 6/3/2023
+format: 
+ html: 
+  theme: Journal
+  toc: true
+  
+editor: visual
+---
+
+## introducción:
+
+En esta pagina web, se estudian y analizan diversos datos sobre el café, basados en la recolección de datos de [Fatih Boyar](https://github.com/fatih-boyar/coffee-quality-data-CQI), el cual los sintetizo del ***Coffee Quality Institute (CQI***. Estos datos incluyen país de origen, altitud, variedad, color y forma de procesamiento. Además, Boyar agrego temas como sabor, aroma y acides; esto le otorga una calificación por puntaje a cada muestra de café.
+
+## Carga de los datos:
+
+Usaremos varias bibliotecas de datos y graficación interactiva las cuales son:
+
+-   Plodly
+-   Ggplot 2
+-   DT
+
+```{r}
+#| label: l1
+#| include: true 
+#| echo: false 
+#| warning: false
+
+library(tidyverse)
+```
+
+```{r}
+#| label: l2
+#| include: true
+#| echo: false
+#| warning: false 
+
+library(DT)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(tidyverse)
+library(ggthemes)
+library(readr)
+```
+
+## Datos a utilizar:
+
+Como ya se menciono, se usan datos disponibles en el *CQI*. Los cuales nos permitiran crear graficos para su analisis. 
+
+```{r}
+#| label: carga de csv
+#| include: true
+#| echo: false 
+#| warning: false 
+
+read_csv("cafe.csv")
+```
+
+### Tabla de datos de café: 
+
+Para comprender los datos, creamos una tabla de contenidos del csv. 
+
+```{r}
+#| label: tabla cafe 
+#| include: true
+#| echo: false 
+#| warning: false 
+
+datos_cafe <- read.csv("cafe.csv")
+```
+
+```{r}
+#| label: table 
+#| include: true
+#| echo: false 
+#| warning: false 
+
+datatable(datos_cafe[, c("Country_of_Origin", "Variety", "Color", "Altitude", "Total_Cup_Points")],
+          options = list(pageLength = 25, lengthMenu = c(10, 20, 50)),
+         filter="top")
+```
+
+## Graficos: 
+
+### Histograma: 
+
+En el siguiente grafico de histograma, se muestra la totalidad de la variante __Cup_points__. Esta es la calificación otorgada a cada  _muestra de café_. 
+
+```{r}
+#| label: histograma cafe
+#| include: true
+#| echo: false 
+#| warning: false 
+
+g1 <- ggplot(datos_cafe, aes(x = Total_Cup_Points)) +
+  geom_histogram(binwidth = 1, color = "yellow", fill = "black") +
+  geom_density(alpha = 0.2, fill = "blue") +
+  labs(title = "Distribución en su totalidad de Cup Points",
+       x = "Cup Points",
+       y = "Frecuencia") +
+  theme_test()
+```
+
+```{r}
+#| label: muestra de histograma 
+#| include: true
+#| echo: false
+#| warning: false 
+
+ggplotly(g1)
+```
+
+### Grafico de dispercion: 
+
+En este *Brafico de dispercion*, se muestra la relación entre la altitud ~(altitude)~ y la variable total cup_points. Es decir una variable de la calificación de la muestra y la altitud donde fue cosechada. 
+
+```{r}
+#| label: dispercion 
+#| include: true
+#| echo: false 
+#| warning: false 
+
+p <- ggplot(datos_cafe, aes(x = Altitude, y = Total_Cup_Points)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "grey") +
+  labs(title = "Relación entre Altitud y Total Cup Points (calificación de la muestra)",
+       x = "Altitude",
+       y = "Total Cup Points") +
+  theme_test()
+```
+
+```{r}
+#| label: muestra dispercion 
+#| include: true
+#| echo: false 
+#| warning: false 
+
+ggplotly(p, tooltip = c("Altitude", "Total_Cup_Points"))
+```
+
+### Grafico de caja: 
+
+En este *grafico de caja*, se ve con más detalles, la variable ***total cup_point***, Osea contiene minimos, maximos y valores atipicos de la variable. 
+
+```{r}
+#| label: cajas
+#| include: true
+#| echo: false 
+#| warning: false 
+
+c1 <- ggplot(datos_cafe, aes(x = Color, y = Total_Cup_Points)) +
+  geom_boxplot() +
+  labs(title = "Total Cup Points por Color",
+       x = "Color",
+       y = "Cup Points") +
+  theme_test() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+#| label: muestra caja 
+#| include: true
+#| echo: false 
+#| warning: false 
+
+ggplotly(c1)
+```
+
+## Conclusion: 
+
+Este fue un prqueño analisis par el curso __GF-0604 Procesamiento de datos Geograficos__. 
